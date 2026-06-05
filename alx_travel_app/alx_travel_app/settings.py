@@ -10,22 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$wpmek_6@rd+98ostivq$dxle4fkx30)6zum)di$w2-0)cv*6('
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -38,10 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'drf-yasg',
+    'drf_yasg',
     'corsheaders',
     'drf_spectacular',
-    'listings',
+    'listings'
 ]
 
 MIDDLEWARE = [
@@ -78,12 +81,17 @@ WSGI_APPLICATION = 'alx_travel_app.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+    'default': env.db_url()
+    # { 'ENGINE': 'django.db.backends.sqlite3',
+    # 'NAME': BASE_DIR / 'db.sqlite3',
 
+    # 'ENGINE': os.getenv('DB_DIALECT', 'django.db.backends.mysql'),
+    # 'NAME': os.getenv('DB_NAME', 'alx_travel_app'),
+    # 'USER': os.getenv('DB_USER', 'root'),
+    # 'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
+    # 'HOST': os.getenv('DB_HOST', 'localhost'),
+    # 'PORT': os.getenv('DB_PORT', '3306'),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -103,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -114,7 +121,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
